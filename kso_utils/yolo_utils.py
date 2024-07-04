@@ -1216,6 +1216,14 @@ def generate_csv_report(
 
     dlist = [[key, *i] for key, values in data_dict.items() for i in values]
 
+    if len(dlist) == 0:
+        # Export to CSV
+        logging.error("No annotations found. Empty output")
+        detect_df = pd.DataFrame()
+        csv_out = Path(evaluation_path, "annotations.csv")
+        detect_df.to_csv(csv_out, index=False)
+        return detect_df
+
     # Convert list of lists to output dataframe
     detect_df = pd.DataFrame(dlist, columns=out_col_list)
 
