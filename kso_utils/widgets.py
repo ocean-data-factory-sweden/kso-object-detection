@@ -320,7 +320,7 @@ def choose_footage(
             # Display the movie
             if preview_media:
                 # with movie_output:
-                # clear_output()
+                #   clear_output()
                 previews = []
 
                 # Display/preview each selected movie
@@ -897,7 +897,20 @@ def preview_movie(
     metadata_width = "40%"  # Adjust as needed
 
     if "http" in movie_path:
-        video_widget = widgets.Video.from_url(movie_path, width=video_width)
+        video_html = f"""
+          <video width="{video_width}" controls>
+              <source src="{movie_path}" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
+        """
+        # Check if _result property exists (adjust based on your IPython version)
+        video_widget_display = display(HTML(video_html))
+        if hasattr(video_widget_display, "_result"):
+            video_widget = video_widget_display._result  # Access the widget object
+        else:
+            video_widget = widgets.HTML(
+                value="<p>Video preview above.</p>"
+            )  # Placeholder widget
     else:
         video_widget = widgets.Video.from_file(movie_path, width=video_width)
 
