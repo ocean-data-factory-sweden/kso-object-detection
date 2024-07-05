@@ -1798,7 +1798,7 @@ class MLProjectProcessor(ProjectProcessor):
     #############
     # Function to choose a model to evaluate
 
-    def choose_model(self, custom_project: str = ""):
+    def choose_model(self, custom_project: str = "", publish: bool = False):
         """
         It takes a project name that is defined in the class and returns a dropdown widget that displays the metrics of the model
         selected
@@ -1937,13 +1937,16 @@ class MLProjectProcessor(ProjectProcessor):
             model_widget.observe(on_change, names="value")
             return model_widget
 
-        elif self.registry is None:
+        elif self.registry is None or publish:
             # Create the dropdown widget
             model_widget = widgets.Dropdown(
                 options=[(name, model) for name, model in model_dict.items()],
-                description="Select model: ",
+                description="Select Zenodo model: ",
+                display="flex",
+                flex_flow="column",
+                align_items="stretch",
+                style={"description_width": "initial"},
             )
-
             # Display the dropdown widget
             display(model_widget)
             return model_widget
