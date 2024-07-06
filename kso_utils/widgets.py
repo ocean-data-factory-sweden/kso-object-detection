@@ -893,8 +893,10 @@ def preview_movie(
     """
 
     # Adjust the width of the video and metadata sections based on your preference
-    video_width = "60%"  # Adjust as needed
-    metadata_width = "40%"  # Adjust as needed
+    video_width = "80%"  # Adjust as needed
+    metadata_width = "20%"  # Adjust as needed
+
+    metadata_html = movie_metadata.T.to_html()
 
     if "http" in movie_path:
         video_html = f"""
@@ -903,26 +905,24 @@ def preview_movie(
               Your browser does not support the video tag.
           </video>
         """
-        # Check if _result property exists (adjust based on your IPython version)
-        video_widget_display = display(HTML(video_html))
-        if hasattr(video_widget_display, "_result"):
-            video_widget = video_widget_display._result  # Access the widget object
-        else:
-            video_widget = widgets.HTML(
-                value="<p>Video preview above.</p>"
-            )  # Placeholder widget
+        combined_html = f"""
+        <div style="display: flex;">
+            <div style="flex: 1;">{video_html}</div>
+            <div style="flex: 1; width: {metadata_width}; overflow: auto;">{metadata_html}</div>
+        </div>
+        """
+        display_widget = HTML(combined_html)
+
     else:
         video_widget = widgets.Video.from_file(movie_path, width=video_width)
 
-    metadata_html = movie_metadata.T.to_html()
+        metadata_widget = widgets.HTML(
+            value=metadata_html,
+            layout=widgets.Layout(width=metadata_width, overflow="auto"),
+        )
 
-    metadata_widget = widgets.HTML(
-        value=metadata_html,
-        layout=widgets.Layout(width=metadata_width, overflow="auto"),
-    )
-
-    # Create a horizontal box layout to display video and metadata side by side
-    display_widget = widgets.HBox([video_widget, metadata_widget])
+        # Create a horizontal box layout to display video and metadata side by side
+        display_widget = widgets.HBox([video_widget, metadata_widget])
 
     display(display_widget)
 
