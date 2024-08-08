@@ -1248,8 +1248,14 @@ def generate_csv_report(
             and detect_df.sampling_end.dtype == "float"
         ):
             detect_df = detect_df[
-                (detect_df.frame_no >= detect_df.sampling_start)
-                & (detect_df.frame_no <= detect_df.sampling_end)
+                (
+                    detect_df.frame_no
+                    >= (detect_df.sampling_start * detect_df.fps).astype(int)
+                )
+                & (
+                    detect_df.frame_no
+                    <= (detect_df.sampling_end * detect_df.fps).astype(int)
+                )
             ]
         # Keep only useful columns
         detect_df = detect_df[out_col_list]
@@ -1262,7 +1268,6 @@ def generate_csv_report(
 
     # Export to CSV
     csv_out = Path(evaluation_path, "annotations.csv")
-    print(len(detect_df))
     detect_df.to_csv(csv_out, index=False)
 
     logging.info(f"Report created at {csv_out}")
@@ -2140,6 +2145,7 @@ def get_species_mapping(model, project_name, team_name="koster", registry="wandb
                 logging.error(f"No artifacts found in run{run.info.artifact_uri}.")
     else:
         logging.error("Registry invalid.")
+        species_mapping = {}
 
     return species_mapping
 
@@ -2174,6 +2180,7 @@ def process_detections(
 
     # Read the annotations.csv file
     df = pd.read_csv(Path(annotations_csv_path, "annotations.csv"))
+    print(df.head())
 
     # Check if the DataFrame is not empty
     if df.empty:

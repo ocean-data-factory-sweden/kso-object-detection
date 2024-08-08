@@ -1343,8 +1343,9 @@ class MLProjectProcessor(ProjectProcessor):
         class CustomVideoWriter(cv2.VideoWriter):
             def __init__(self, *args, **kwargs):
                 args = list(args)
-                args[0] = args[0].replace(".avi", ".mp4")
-                args[1] = cv2.VideoWriter_fourcc(*"avc1")
+                if len(args) > 0:
+                    args[0] = args[0].replace(".avi", ".mp4")
+                    args[1] = cv2.VideoWriter_fourcc(*"avc1")
                 super().__init__(*args, **kwargs)
 
         # Replace cv2.VideoWriter with the patched version

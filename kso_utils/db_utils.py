@@ -524,7 +524,13 @@ def add_db_info_to_df(
     # Set sites table
     elif table_name == "sites":
         # Save the name of the columns to merge dfs on
-        left_on_col = "site_id"
+        if "site_id" in df.columns:
+            left_on_col = "site_id"
+        elif "siteName" in df.columns:
+            left_on_col = "siteName"
+            right_on_col = "siteName"
+        else:
+            logging.error("No suitable site column found for merge.")
 
     # Set species table
     elif table_name == "species":
