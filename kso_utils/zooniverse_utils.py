@@ -1433,12 +1433,12 @@ def extract_clips(
                 # Specify the select size (MB) of the clip
                 output_options["b:v"] = modification_details_dict["b:v"]
 
-                # add the cuda-compatible vcodec
-                if gpu_available:
-                    # Remove the copy format argument
-                    del output_options["c"]
-                    output_options["c:v"] = "h264_nvenc"
-                    logging.info("Compressing using h264_nvenc")
+            # add the cuda-compatible vcodec
+            if gpu_available:
+                # Remove the copy format argument
+                output_options.pop("c")
+                output_options["c:v"] = "h264_nvenc"
+                logging.info("Compressing using h264_nvenc")
 
     input_options["ss"] = upl_second_i
     input_options["t"] = clip_length
