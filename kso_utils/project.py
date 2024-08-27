@@ -1679,6 +1679,23 @@ class MLProjectProcessor(ProjectProcessor):
             time.sleep(30)
             mlflow.log_input(train_dataset, context="training")
             mlflow.log_input(val_dataset, context="validation")
+
+            if not Path(Path(self.data_path).parent, "images.zip").exists():
+                shutil.make_archive(
+                    Path(Path(self.data_path).parent, "images"),
+                    "zip",
+                    Path(Path(self.data_path).parent, "images"),
+                )
+                shutil.rmtree(Path(Path(self.data_path).parent, "images"))
+
+            if not Path(Path(self.data_path).parent, "labels.zip").exists():
+                shutil.make_archive(
+                    Path(Path(self.data_path).parent, "labels"),
+                    "zip",
+                    Path(Path(self.data_path).parent, "labels"),
+                )
+                shutil.rmtree(Path(Path(self.data_path).parent, "labels"))
+
             mlflow.log_artifacts(
                 str(Path(self.data_path).parent), artifact_path="input_datasets"
             )
