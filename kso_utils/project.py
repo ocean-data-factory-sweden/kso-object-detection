@@ -1714,7 +1714,7 @@ class MLProjectProcessor(ProjectProcessor):
 
             # Upload txt files
             # Iterate over all files in the specified directory
-            for txt_file in Path(self.data_path).parent.rglob(
+            for txt_file in Path(self.data_path).parent.glob(
                 "*.txt"
             ):  # rglob searches recursively for all .yaml files
                 # Log each .yaml file as an artifact
