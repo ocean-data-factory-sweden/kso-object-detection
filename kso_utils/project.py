@@ -1675,8 +1675,8 @@ class MLProjectProcessor(ProjectProcessor):
                     raise e
 
             mlflow.start_run(experiment_id=experiment_id, run_name=exp_name)
-            # Wait 30 seconds for MLFlow to register the new run
-            time.sleep(30)
+            # Wait 1 minute for MLFlow to register the new run
+            time.sleep(60)
             mlflow.log_input(train_dataset, context="training")
             mlflow.log_input(val_dataset, context="validation")
 
