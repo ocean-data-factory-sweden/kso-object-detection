@@ -1686,7 +1686,6 @@ class MLProjectProcessor(ProjectProcessor):
                     "zip",
                     Path(Path(self.data_path).parent, "images"),
                 )
-                shutil.rmtree(Path(Path(self.data_path).parent, "images"))
 
             if not Path(Path(self.data_path).parent, "labels.zip").exists():
                 shutil.make_archive(
@@ -1694,11 +1693,32 @@ class MLProjectProcessor(ProjectProcessor):
                     "zip",
                     Path(Path(self.data_path).parent, "labels"),
                 )
-                shutil.rmtree(Path(Path(self.data_path).parent, "labels"))
 
-            mlflow.log_artifacts(
-                str(Path(self.data_path).parent), artifact_path="input_datasets"
+            # Upload zip files
+            mlflow.log_artifact(
+                Path(Path(self.data_path).parent, "images.zip"),
+                artifact_path="input_datasets",
             )
+            mlflow.log_artifact(
+                Path(Path(self.data_path).parent, "labels.zip"),
+                artifact_path="input_datasets",
+            )
+
+            # Upload yaml files
+            # Iterate over all files in the specified directory
+            for yaml_file in Path(self.data_path).parent.rglob(
+                "*.yaml"
+            ):  # rglob searches recursively for all .yaml files
+                # Log each .yaml file as an artifact
+                mlflow.log_artifact(yaml_file, artifact_path="input_datasets")
+
+            # Upload txt files
+            # Iterate over all files in the specified directory
+            for txt_file in Path(self.data_path).parent.rglob(
+                "*.txt"
+            ):  # rglob searches recursively for all .yaml files
+                # Log each .yaml file as an artifact
+                mlflow.log_artifact(txt_file, artifact_path="input_datasets")
         try:
             if "yolov5" in weights:
                 weights = str(Path(weights).name)
