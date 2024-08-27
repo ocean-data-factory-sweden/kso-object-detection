@@ -1654,8 +1654,8 @@ class MLProjectProcessor(ProjectProcessor):
             val_dataset: PandasDataset = mlflow.data.from_pandas(
                 val_df, source=valid_path
             )
-            if active_run:
-                mlflow.end_run()
+            #if active_run:
+            #    mlflow.end_run()
 
             from mlflow.exceptions import MlflowException
 
