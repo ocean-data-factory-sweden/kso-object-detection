@@ -2441,7 +2441,7 @@ class MLProjectProcessor(ProjectProcessor):
         :type download_path: str
         :return: The path to the downloaded model checkpoint.
         """
-        if ".pt" in model_name:
+        if ".pt" in model_name and ":" not in model_name:
             logging.info("Local model successfully loaded.")
             return str(Path(model_name).parent)
         if self.registry == "mlflow":
