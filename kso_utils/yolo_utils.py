@@ -257,7 +257,13 @@ def clean_species_name(species_name: str):
     """
     Clean species name
     """
-    return species_name.lower().replace(" ", "_").replace("-", "_").replace("/", "_")
+    return (
+        species_name.split(" (")[0]
+        .lower()
+        .replace(" ", "_")
+        .replace("-", "_")
+        .replace("/", "_")
+    )
 
 
 def split_frames(data_path: str, perc_test: float):
@@ -487,6 +493,9 @@ def frame_aggregation(
         else:
             # Allow for both cases where commonName or scientificName was used for annotation
             try:
+                species_df["commonName"] = species_df["commonName"].apply(
+                    lambda x: x.split(" (")[0], 1
+                )
                 train_rows["species_id"] = train_rows["label"].apply(
                     lambda x: (
                         species_df[species_df.commonName == x].id.values[0]
@@ -509,7 +518,7 @@ def frame_aggregation(
                         if len(out) == 1:
                             return out[0]
                         else:
-                            logging.info(
+                            logging.debug(
                                 "Warning: Using raw labels without species verification"
                             )
                             return row
@@ -897,6 +906,7 @@ def frame_aggregation(
                     groups = [
                         i for i in groups.values if not pd.isnull(i[speciesid_pos])
                     ]
+                    print("Species dict", sp_id2mod_id)
                     open(file_out, "w").write(
                         "\n".join(
                             [

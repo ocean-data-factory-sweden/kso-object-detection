@@ -163,18 +163,19 @@ def draw_annotations_in_frame(im: PILImage.Image, class_df_subject: pd.DataFrame
     for index, row in class_df_subject.iterrows():
         # Specify the vals object
         vals = row.vals
+        if vals[0] == vals[0]:
 
-        # Adjust annotantions to image size
-        vals_adjusted = tuple(
-            [
-                int(vals[0]),
-                int(vals[1]),
-                int((vals[0] + vals[2])),
-                int((vals[1] + vals[3])),
-            ]
-        )
+            # Adjust annotantions to image size
+            vals_adjusted = tuple(
+                [
+                    int(vals[0]),
+                    int(vals[1]),
+                    int((vals[0] + vals[2])),
+                    int((vals[1] + vals[3])),
+                ]
+            )
 
-        # Draw annotation
-        img1.rectangle(vals_adjusted, width=2)
+            # Draw annotation
+            img1.rectangle(vals_adjusted, width=2)
 
     return im
