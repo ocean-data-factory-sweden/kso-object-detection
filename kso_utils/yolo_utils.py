@@ -258,7 +258,8 @@ def clean_species_name(species_name: str):
     Clean species name
     """
     return (
-        species_name.split(" (")[0]
+        species_name.split("\n(")[0]
+        .split(" (")[0]
         .lower()
         .replace(" ", "_")
         .replace("-", "_")
@@ -495,6 +496,9 @@ def frame_aggregation(
             try:
                 species_df["commonName"] = species_df["commonName"].apply(
                     lambda x: x.split(" (")[0], 1
+                )
+                train_rows["label"] = train_rows["label"].apply(
+                    lambda x: x.split("\n(")[0], 1
                 )
                 train_rows["species_id"] = train_rows["label"].apply(
                     lambda x: (
@@ -906,7 +910,6 @@ def frame_aggregation(
                     groups = [
                         i for i in groups.values if not pd.isnull(i[speciesid_pos])
                     ]
-                    print("Species dict", sp_id2mod_id)
                     open(file_out, "w").write(
                         "\n".join(
                             [
