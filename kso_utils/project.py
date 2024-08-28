@@ -1654,7 +1654,7 @@ class MLProjectProcessor(ProjectProcessor):
             val_dataset: PandasDataset = mlflow.data.from_pandas(
                 val_df, source=valid_path
             )
-            #if active_run:
+            # if active_run:
             #    mlflow.end_run()
 
             from mlflow.exceptions import MlflowException
@@ -1674,51 +1674,51 @@ class MLProjectProcessor(ProjectProcessor):
                     # Handle other MlflowExceptions
                     raise e
 
-            with mlflow.start_run(experiment_id=experiment_id, run_name=exp_name):
-                # Wait 1 minute for MLFlow to register the new run
-                time.sleep(60)
-                #mlflow.log_input(train_dataset, context="training")
-                #mlflow.log_input(val_dataset, context="validation")
+            mlflow.start_run(experiment_id=experiment_id, run_name=exp_name)
+            # Wait 1 minute for MLFlow to register the new run
+            time.sleep(60)
+            mlflow.log_input(train_dataset, context="training")
+            mlflow.log_input(val_dataset, context="validation")
 
-                if not Path(Path(self.data_path).parent, "images.zip").exists():
-                    shutil.make_archive(
-                        Path(Path(self.data_path).parent, "images"),
-                        "zip",
-                        Path(Path(self.data_path).parent, "images"),
-                    )
-
-                if not Path(Path(self.data_path).parent, "labels.zip").exists():
-                    shutil.make_archive(
-                        Path(Path(self.data_path).parent, "labels"),
-                        "zip",
-                        Path(Path(self.data_path).parent, "labels"),
-                    )
-
-                # Upload zip files
-                mlflow.log_artifact(
-                    Path(Path(self.data_path).parent, "images.zip"),
-                    artifact_path="input_datasets",
-                )
-                mlflow.log_artifact(
-                    Path(Path(self.data_path).parent, "labels.zip"),
-                    artifact_path="input_datasets",
+            if not Path(Path(self.data_path).parent, "images.zip").exists():
+                shutil.make_archive(
+                    Path(Path(self.data_path).parent, "images"),
+                    "zip",
+                    Path(Path(self.data_path).parent, "images"),
                 )
 
-                # Upload yaml files
-                # Iterate over all files in the specified directory
-                for yaml_file in Path(self.data_path).parent.rglob(
-                    "*.yaml"
-                ):  # rglob searches recursively for all .yaml files
-                    # Log each .yaml file as an artifact
-                    mlflow.log_artifact(yaml_file, artifact_path="input_datasets")
+            if not Path(Path(self.data_path).parent, "labels.zip").exists():
+                shutil.make_archive(
+                    Path(Path(self.data_path).parent, "labels"),
+                    "zip",
+                    Path(Path(self.data_path).parent, "labels"),
+                )
 
-                # Upload txt files
-                # Iterate over all files in the specified directory
-                for txt_file in Path(self.data_path).parent.glob(
-                    "*.txt"
-                ):  # rglob searches recursively for all .yaml files
-                    # Log each .yaml file as an artifact
-                    mlflow.log_artifact(txt_file, artifact_path="input_datasets")
+            # Upload zip files
+            mlflow.log_artifact(
+                Path(Path(self.data_path).parent, "images.zip"),
+                artifact_path="input_datasets",
+            )
+            mlflow.log_artifact(
+                Path(Path(self.data_path).parent, "labels.zip"),
+                artifact_path="input_datasets",
+            )
+
+            # Upload yaml files
+            # Iterate over all files in the specified directory
+            for yaml_file in Path(self.data_path).parent.rglob(
+                "*.yaml"
+            ):  # rglob searches recursively for all .yaml files
+                # Log each .yaml file as an artifact
+                mlflow.log_artifact(yaml_file, artifact_path="input_datasets")
+
+            # Upload txt files
+            # Iterate over all files in the specified directory
+            for txt_file in Path(self.data_path).parent.glob(
+                "*.txt"
+            ):  # rglob searches recursively for all .yaml files
+                # Log each .yaml file as an artifact
+                mlflow.log_artifact(txt_file, artifact_path="input_datasets")
         try:
             if "yolov5" in weights:
                 weights = str(Path(weights).name)
