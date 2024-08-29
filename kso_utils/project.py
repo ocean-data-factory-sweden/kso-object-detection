@@ -831,7 +831,9 @@ class ProjectProcessor:
                 )
                 classifications_filtered = self.processed_zoo_classifications
 
-        if not "poly_points" in classifications_filtered.columns:
+        # Check if all items in 'column1' are "poly_points" as a string
+        all_nan = (classifications_filtered["poly_points"] == "nan").all()
+        if not "poly_points" in classifications_filtered.columns or all_nan:
             self.aggregated_zoo_classifications = zoo_utils.aggregate_classifications(
                 self.project,
                 classifications_filtered,
