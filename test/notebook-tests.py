@@ -245,7 +245,6 @@ def test_t6():
     s_utils.get_ml_data(project, test=True)
     model = mlp.choose_model().options[-1][1]
 
-
     artifact_dir = mlp.get_model(model, mlp.output_path)
     source = str(Path("../test/test_output", mlp.project.ml_folder, "images"))
     save_dir = project_path
