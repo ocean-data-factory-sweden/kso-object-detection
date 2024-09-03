@@ -840,6 +840,8 @@ class ProjectProcessor:
                 workflow_checks["Subject type: #0"],
                 agg_params,
             )
+            # Return nan values for testing
+            self.aggregate_zoo_classifications["poly_points"] = "nan"
         else:
             # Use all polygons
             self.aggregated_zoo_classifications = classifications_filtered
