@@ -243,10 +243,8 @@ def test_t6():
 
     # Evaluation
     s_utils.get_ml_data(project, test=True)
-    try:
-        model = mlp.choose_model().options[-1][1]
-    except IndexError:
-        model = "yolo8n.pt"
+    model = mlp.choose_model().options[-1][1]
+
 
     artifact_dir = mlp.get_model(model, mlp.output_path)
     source = str(Path("../test/test_output", mlp.project.ml_folder, "images"))
