@@ -200,9 +200,14 @@ def get_movies_id(df: pd.DataFrame, conn: sqlite3.Connection):
     )
 
     # Check all the movies have a unique ID
-    df_unique = df.movie_filename.unique()
-    movies_df_unique = movies_df.movie_filename.unique()
-    diff_filenames = set(df_unique).difference(movies_df_unique)
+    df_unique = df.movie_filename.apply(fix_text_encoding)
+    df["merge_filename"] = df_unique
+    # Since we want to match to the original movies
+    # We do not change their encoding but instead use a temporary
+    # merge_filename column to do matching
+    movies_df_unique = movies_df.movie_filename
+    movies_df.rename(columns={"movie_filename": "merge_filename"}, inplace=True)
+    diff_filenames = set(df_unique).difference(movies_df_unique.unique())
 
     if diff_filenames:
         raise ValueError(
@@ -210,10 +215,10 @@ def get_movies_id(df: pd.DataFrame, conn: sqlite3.Connection):
         )
 
     # Reference the manually uploaded subjects with the movies table
-    df = pd.merge(df, movies_df, how="left", on="movie_filename")
+    df = pd.merge(df, movies_df, how="left", on="merge_filename")
 
     # Drop the movie_filename column
-    df = df.drop(columns=["movie_filename"])
+    df = df.drop(columns=["movie_filename", "merge_filename"])
 
     return df
 
