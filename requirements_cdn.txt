@@ -24,8 +24,6 @@ moviepy==1.0.3
 natsort==8.1.0
 notebook==7.0.4
 numpy>=1.22.0,<1.24.1
-opencv-contrib-python==4.6.0.66
-opencv-python==4.6.0.66
 opencv-python-headless==4.6.0.66
 pandas==1.4.0
 git+https://github.com/zooniverse/panoptes-python-client.git
