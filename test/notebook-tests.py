@@ -46,6 +46,7 @@ mlp = MLProjectProcessor(pp, test=True)
 output_path = Path("../test/test_output")
 output_path.mkdir(parents=True, exist_ok=True)
 mlp.output_path = str(Path("../test/test_output").resolve())
+mlp.registry = "wandb"
 
 # ----------------notebook 1----------------------------------------------------
 
@@ -243,7 +244,7 @@ def test_t6():
 
     # Evaluation
     s_utils.get_ml_data(project, test=True)
-    model = mlp.choose_model().options[-1][1]
+    model = mlp.choose_model(custom_project="template_project").options[0][1]
 
     artifact_dir = mlp.get_model(model, mlp.output_path)
     source = str(Path("../test/test_output", mlp.project.ml_folder, "images"))
