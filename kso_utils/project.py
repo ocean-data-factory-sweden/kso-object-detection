@@ -2436,7 +2436,7 @@ class MLProjectProcessor(ProjectProcessor):
         #    self.run_history, key=lambda x: x["metrics"]["metrics/"+sort_metric]
         # )
 
-    def get_model(self, model_name: str, download_path: str):
+    def get_model(self, model_name: str, download_path: str, custom_project: str = ""):
         """
         It downloads the latest model checkpoint from the specified project and model name
 
@@ -2451,6 +2451,7 @@ class MLProjectProcessor(ProjectProcessor):
         if ".pt" in model_name and ":" not in model_name:
             logging.info("Local model successfully loaded.")
             return str(Path(model_name).parent)
+
         if self.registry == "mlflow":
             artifact_dir = mlflow.artifacts.download_artifacts(
                 model_name, dst_path=download_path
@@ -2459,13 +2460,22 @@ class MLProjectProcessor(ProjectProcessor):
             return str(Path(artifact_dir).parent)
 
         elif self.registry == "wandb":
-            if self.team_name == "wildlife-ai":
-                logging.info("Please note: Using models from adi-ohad-heb-uni account.")
-                full_path = "adi-ohad-heb-uni/project-wildlife-ai"
-            elif self.project_name == "template_project":
-                full_path = f"{self.team_name}/spyfish_aotearoa"
+            # weird error fix (initialize api another time)
+            if len(custom_project) > 0:
+                logging.info(
+                    "Please note: Using models from custom project, please ensure that you have access."
+                )
+                full_path = custom_project
             else:
-                full_path = f"{self.team_name}/{self.project_name.lower()}"
+                if self.team_name == "wildlife-ai":
+                    logging.info(
+                        "Please note: Using models from adi-ohad-heb-uni account."
+                    )
+                    full_path = "adi-ohad-heb-uni/project-wildlife-ai"
+                elif self.project_name == "template_project":
+                    full_path = f"{self.team_name}/spyfish_aotearoa"
+                else:
+                    full_path = f"{self.team_name}/{self.project_name.lower()}"
             api = wandb.Api()
             try:
                 api.artifact_type(type_name="model", project=full_path).collections()
