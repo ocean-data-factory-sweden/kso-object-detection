@@ -246,7 +246,7 @@ def test_t6():
     s_utils.get_ml_data(project, test=True)
     model = mlp.choose_model(custom_project="template_project").options[0][1]
 
-    artifact_dir = mlp.get_model(model, mlp.output_path)
+    artifact_dir = mlp.get_model(model, mlp.output_path, custom_project="template_project")
     source = str(Path("../test/test_output", mlp.project.ml_folder, "images"))
     save_dir = project_path
     conf_thres = kso_widgets.choose_conf()
