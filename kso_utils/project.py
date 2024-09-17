@@ -95,11 +95,12 @@ class ProjectProcessor:
 
         # Create the folder to store the csv files if not exist
         csv_folder = Path(self.project.csv_folder)
-        csv_folder.mkdir(parents=True, exist_ok=True)
+        if not csv_folder.exists():
+            csv_folder.mkdir(parents=True, exist_ok=True)
 
-        # Recursively add permissions to folders created
-        for root, dirs, files in csv_folder.iterdir():
-            root.chmod(0o777)
+            # Recursively add permissions to folders created
+            for root, dirs, files in csv_folder.iterdir():
+                root.chmod(0o777)
 
         # Download csv files from the server if needed and store their server path
         self.csv_paths = server_utils.download_init_csv(
