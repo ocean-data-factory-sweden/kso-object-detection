@@ -48,6 +48,67 @@ def upload_archive(access_key: str, artifact_dir: str):
     return depo_id
 
 
+def get_files_from_record(record_id: str):
+    record_url = f"https://zenodo.org/api/records/{record_id}"
+    record_response = requests.get(record_url)
+
+    if record_response.status_code == 200:
+        record_data = record_response.json()
+        if "files" in record_data and record_data["files"]:
+            return record_data["files"]
+        else:
+            logging.warning("No files found in the published record.")
+    return []
+
+
+def download_and_process_file(file_info, download_dir, headers):
+    file_name = file_info["key"]
+    if "ref" not in file_name:
+        return None
+
+    download_url = file_info["links"]["self"].replace("/draft", "")
+    local_filename = os.path.join(download_dir, file_name)
+
+    print(f"Downloading {file_name} from {download_url}...")
+    with requests.get(download_url, headers=headers, stream=True) as file_response:
+        if file_response.status_code != 200:
+            print(
+                f"Failed to download {file_name}. HTTP status code: {file_response.status_code}"
+            )
+            return None
+
+        with open(local_filename, "wb") as f:
+            for chunk in file_response.iter_content(chunk_size=8192):
+                f.write(chunk)
+    print(f"{file_name} downloaded successfully.")
+
+    # Extract the archive
+    extracted_files = extract_archive(local_filename, download_dir)
+    model_path = next(
+        (os.path.join(download_dir, f) for f in extracted_files if f.endswith(".pt")),
+        None,
+    )
+
+    # Remove the archive after extraction
+    os.remove(local_filename)
+
+    return (
+        (os.path.basename(local_filename).replace(".zip", ""), model_path)
+        if model_path
+        else None
+    )
+
+
+def fetch_records(base_url, headers, page):
+    response = requests.get(base_url, headers=headers, params={"page": page})
+    if response.status_code != 200:
+        print(
+            f"Failed to retrieve records for page {page}. HTTP status code: {response.status_code}"
+        )
+        return []
+    return response.json()
+
+
 def download_and_extract_models_from_zenodo(api_token, download_dir="models"):
     """
     Download model archives from Zenodo associated with the account, extract the model files, and return their paths.
@@ -59,59 +120,26 @@ def download_and_extract_models_from_zenodo(api_token, download_dir="models"):
     Returns:
     dict: Dictionary with model names as keys and local file paths as values.
     """
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
+    os.makedirs(download_dir, exist_ok=True)
 
     headers = {"Authorization": f"Bearer {api_token}"}
+    base_url = "https://zenodo.org/api/deposit/depositions"
 
     model_paths = {}
     page = 1
-    base_url = "https://zenodo.org/api/deposit/depositions"
 
     while True:
-        response = requests.get(base_url, headers=headers, params={"page": page})
-        if response.status_code != 200:
-            print(
-                f"Failed to retrieve records. HTTP status code: {response.status_code}"
-            )
-            break
-
-        records = response.json()
+        records = fetch_records(base_url, headers, page)
         if not records:
             break
 
         for record in records:
-            for file_info in record["files"]:
-                file_name = file_info["filename"]
-                if "ref" in file_name:
-                    download_url = file_info["links"]["download"]
-                    download_url = download_url.replace("/draft", "")
-                    local_filename = os.path.join(download_dir, file_name)
-
-                    print(f"Downloading {file_name} from {download_url}...")
-                    file_response = requests.get(
-                        download_url, headers=headers, stream=True
-                    )
-                    if file_response.status_code == 200:
-                        with open(local_filename, "wb") as f:
-                            for chunk in file_response.iter_content(chunk_size=8192):
-                                f.write(chunk)
-                        print(f"{file_name} downloaded successfully.")
-
-                        # Extract the archive
-                        extracted_files = extract_archive(local_filename, download_dir)
-                        for extracted_file in extracted_files:
-                            if extracted_file.endswith(".pt"):
-                                model_paths[
-                                    os.path.basename(local_filename).replace(".zip", "")
-                                ] = os.path.join(download_dir, extracted_file)
-
-                        # Remove the archive after extraction
-                        os.remove(local_filename)
-                    else:
-                        print(
-                            f"Failed to download {file_name}. HTTP status code: {file_response.status_code}"
-                        )
+            file_list = get_files_from_record(record["id"])
+            if file_list:
+                for file_info in file_list:
+                    result = download_and_process_file(file_info, download_dir, headers)
+                    if result:
+                        model_paths[result[0]] = result[1]
 
         page += 1
 

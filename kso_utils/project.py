@@ -1853,6 +1853,7 @@ class MLProjectProcessor(ProjectProcessor):
         :param project_name: The name of the project you want to load the model from
         :return: The model_widget is being returned.
         """
+        # TODO: Remove hardcoded API key from Zenodo
         model_dict = zenodo_utils.download_and_extract_models_from_zenodo(
             "pClzrdKwErArGWuPXMje0OtLEaq2gM8vHcAEeQN9CXyS2IjbuJsw05JLjVII"
         )
