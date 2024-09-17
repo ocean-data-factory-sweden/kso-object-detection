@@ -17,6 +17,7 @@ import imagesize
 import ipysheet
 from IPython.display import display, clear_output
 import mlflow
+from typing import List, Dict, Any
 
 # util imports
 import kso_utils.project_utils as project_utils
@@ -40,7 +41,7 @@ class ProjectProcessor:
     def __init__(self, project: project_utils.Project):
         self.project = project
         self.db_connection = None
-        self.init_keys = ["movies", "species", "photos", "surveys", "sites"]
+        self.INIT_KEYS = ["movies", "species", "photos", "surveys", "sites"]
         self.server_connection = {}
         self.csv_paths = {}
         self.zoo_info = {}
@@ -64,10 +65,10 @@ class ProjectProcessor:
         self.setup_db()
 
     def __repr__(self):
-        return repr(self.__dict__)
+        return f"ProjectProcessor(project={self.project})"
 
     @property
-    def keys(self):
+    def keys(self) -> List[str]:
         """Log keys of ProjectProcessor object"""
         logging.debug("Stored variable names.")
         return list(self.__dict__.keys())
@@ -83,9 +84,8 @@ class ProjectProcessor:
         """
         try:
             self.server_connection = server_utils.connect_to_server(self.project)
-        except BaseException as e:
-            logging.error(f"Server connection could not be established. Details {e}")
-            return
+        except Exception as e:
+            logging.error(f"Server connection could not be established. Details: {e}")
 
     def map_init_csv(self):
         """
@@ -94,16 +94,16 @@ class ProjectProcessor:
         """
 
         # Create the folder to store the csv files if not exist
-        if not Path(self.project.csv_folder).exists():
-            Path(self.project.csv_folder).mkdir(parents=True, exist_ok=True)
+        csv_folder = Path(self.project.csv_folder)
+        csv_folder.mkdir(parents=True, exist_ok=True)
 
-            # Recursively add permissions to folders created
-            for root, dirs, files in Path(self.project.csv_folder).iterdir():
-                root.chmod(0o777)
+        # Recursively add permissions to folders created
+        for root, dirs, files in csv_folder.iterdir():
+            root.chmod(0o777)
 
         # Download csv files from the server if needed and store their server path
         self.csv_paths = server_utils.download_init_csv(
-            self.project, self.init_keys, self.server_connection
+            self.project, self.INIT_KEYS, self.server_connection
         )
 
         # Store the paths of the local csv files
@@ -113,32 +113,28 @@ class ProjectProcessor:
         """
         It loads the metadata from the relevant local csv files into the `csv_paths` dictionary
         """
-        # Retrieve a list with all the csv files in the folder with initival csvs
+        # Retrieve a list with all the csv files in the folder with initial csvs
         csv_folder = Path(self.project.csv_folder)
-        local_csv_files = [
-            str(filename)
-            for filename in Path(csv_folder).iterdir()
-            if filename.suffix == ".csv"
-        ]
+        local_csv_files = [str(f) for f in csv_folder.glob("*.csv")]
 
         # Store the paths of the local csv files of interest into the "csv_paths" dictionary
         for filename in local_csv_files:
             # Select only csv files that are relevant to start the db
-            for init_key in self.init_keys:
+            for init_key in self.INIT_KEYS:
                 if init_key in filename:
                     # Specify the key in the dictionary of the CSV file
                     csv_key = f"local_{init_key}_csv"
 
                     # Store the path of the CSV file
-                    csv_path = filename
-                    self.csv_paths[csv_key] = csv_path
+                    self.csv_paths[csv_key] = filename
 
                     # Read the local CSV file into a pandas DataFrame
-                    setattr(self, csv_key, pd.read_csv(csv_path))
+                    df = pd.read_csv(filename)
+                    setattr(self, csv_key, df)
 
                     # Temporary workaround for sites_csv (Pylint needs an explicit declaration)
                     if csv_key == "local_sites_csv":
-                        self.local_sites_csv = pd.read_csv(csv_path)
+                        self.local_sites_csv = df
 
     def setup_db(self):
         """
@@ -551,7 +547,7 @@ class ProjectProcessor:
 
         button.on_click(on_button_clicked)
 
-        # TO BE COMPLETED with Chloudina
+        # TO BE COMPLETED with Cloudina
         # upload new movies and update csvs
         display(button)
 
