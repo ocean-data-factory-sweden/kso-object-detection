@@ -959,6 +959,10 @@ class ProjectProcessor:
                 ]
             )
 
+            if not Path(output_path).exists():
+                Path(output_path).mkdir(parents=True)
+                Path(output_path).chmod(0o777)
+
             results = g_utils.parallel_map(
                 kso_widgets.extract_custom_frames,
                 movie_files,
