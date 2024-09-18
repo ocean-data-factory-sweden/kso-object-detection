@@ -989,7 +989,7 @@ class ProjectProcessor:
                 self.frames_to_upload_df = self.frames_to_upload_df[
                     [
                         "frame_path",
-                        "site_id",
+                        "siteName",
                         "movie_id",
                         "created_on",
                         "frame_number",
