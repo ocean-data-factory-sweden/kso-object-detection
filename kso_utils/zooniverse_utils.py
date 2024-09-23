@@ -2165,7 +2165,7 @@ def modify_frames(
         for index, row in tqdm(
             frames_to_upload_df.iterrows(), total=frames_to_upload_df.shape[0]
         ):
-            if not row["modif_frame_path"].exists():
+            if not Path(row["modif_frame_path"]).exists():
                 # Set up input prompt
                 init_prompt = f'ffmpeg.input("{row["frame_path"]}")'
                 full_prompt = init_prompt
@@ -2179,7 +2179,7 @@ def modify_frames(
                 try:
                     logging.info(full_prompt)
                     eval(full_prompt).run(capture_stdout=True, capture_stderr=True)
-                    row["modif_frame_path"].chmod(0o777)
+                    Path(row["modif_frame_path"]).chmod(0o777)
                 except ffmpeg.Error as e:
                     logging.info("stdout: {}", e.stdout.decode("utf8"))
                     logging.info("stderr: {}", e.stderr.decode("utf8"))

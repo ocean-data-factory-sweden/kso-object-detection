@@ -898,7 +898,13 @@ def frame_aggregation(
                 file_out = Path(out_path, "labels", f"{file}_frame_{name[0]}.txt")
                 img_out = Path(out_path, "images", f"{file}_frame_{name[0]}.jpg")
             else:
-                file_path = Path(name)
+                if isinstance(name, str):
+                    file_path = Path(name)
+                elif isinstance(name, tuple):
+                    file_path = Path(name[0])
+                else:
+                    logging.error("Filename not found.")
+                    return
                 file, _ = file_path.stem, file_path.suffix
                 file_out = Path(out_path, "labels", f"{file}.txt")
                 img_out = Path(out_path, "images", f"{file}.jpg")
