@@ -551,7 +551,7 @@ def frame_aggregation(
                     logging.warning(
                         "Unable to match species name to metadata. Raw label will be used."
                     )
-                    sp_id2mod_id[str(m_id)] = m_id
+                    sp_id2mod_id[str(species_list[ix])] = m_id
                     m_id += 1
 
     # Get movie info from server
