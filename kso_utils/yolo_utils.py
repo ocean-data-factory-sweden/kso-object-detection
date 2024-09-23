@@ -547,6 +547,12 @@ def frame_aggregation(
                 if len(match) == 1:
                     sp_id2mod_id[match[0]] = m_id
                     m_id += 1
+                else:
+                    logging.warning(
+                        "Unable to match species name to metadata. Raw label will be used."
+                    )
+                    sp_id2mod_id[str(m_id)] = m_id
+                    m_id += 1
 
     # Get movie info from server
     from kso_utils.movie_utils import retrieve_movie_info_from_server
@@ -984,9 +990,11 @@ def frame_aggregation(
                     PIL.Image.fromarray(img_array).save(img_out)
             else:
                 if link_bool:
-                    image_output = PIL.Image.open(requests.get(name, stream=True).raw)
+                    image_output = PIL.Image.open(
+                        requests.get(name[0], stream=True).raw
+                    )
                 else:
-                    image_output = np.asarray(PIL.Image.open(name))
+                    image_output = np.asarray(PIL.Image.open(name[0]))
                 img_array = np.asarray(image_output)
                 PIL.Image.fromarray(img_array).save(img_out)
 
