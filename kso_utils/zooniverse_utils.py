@@ -2169,21 +2169,28 @@ def modify_frames(
                 # Set up input prompt
                 init_prompt = f'ffmpeg.input("{row["frame_path"]}")'
                 full_prompt = init_prompt
+                # Initialize filter chain
+                filter_chain = []
                 # Set up modification
                 for transform in modification_details.values():
                     if "filter" in transform:
                         mod_prompt = transform["filter"]
-                        full_prompt += mod_prompt
+                        filter_chain.append(mod_prompt)
 
-                # Run the modification
-                try:
-                    logging.info(full_prompt)
-                    eval(full_prompt).run(capture_stdout=True, capture_stderr=True)
-                    Path(row["modif_frame_path"]).chmod(0o777)
-                except ffmpeg.Error as e:
-                    logging.info("stdout: {}", e.stdout.decode("utf8"))
-                    logging.info("stderr: {}", e.stderr.decode("utf8"))
-                    raise e
+                # Join filters with commas to form a filter chain
+                if filter_chain:
+                    filter_str = ",".join(filter_chain)
+                    full_prompt += f'.filter("{filter_str}")'
+
+                    # Run the modification
+                    try:
+                        logging.info(full_prompt)
+                        eval(full_prompt).run(capture_stdout=True, capture_stderr=True)
+                        Path(row["modif_frame_path"]).chmod(0o777)
+                    except ffmpeg.Error as e:
+                        logging.info("stdout: {}", e.stdout.decode("utf8"))
+                        logging.info("stderr: {}", e.stderr.decode("utf8"))
+                        raise e
 
         logging.info("Frames modified successfully")
 

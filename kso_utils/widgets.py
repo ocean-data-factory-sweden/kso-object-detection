@@ -1328,6 +1328,7 @@ class clip_modification_widget(widgets.VBox):
 
 # Function to specify the frame modification
 def select_modification():
+
     # Widget to select the frame modification
 
     frame_modifications = {
@@ -1341,8 +1342,40 @@ def select_modification():
             "b:v": "3M",
         },
         "Blur_sensitive_info": {
-            "filter": '.drawbox(0, 0, "iw", "ih*(15/100)", color="black",thickness="fill").drawbox(0, "ih*(95/100)","iw", "ih*(15/100)", color="black", thickness="fill")',
-            "None": {},
+            "filter": "drawbox=0:0:iw:ih*(15/100):black@0.7:t=fill,drawbox=0:ih*(95/100):iw:ih*(15/100):black@0.7:t=fill",
+            "None": {},  # Option to skip the filter if no blur is needed
+        },
+        # Increase brightness (useful for low-light)
+        "Increase_brightness": {
+            "filter": "eq=brightness=0.1",  # Slight increase in brightness
+        },
+        # Increase contrast (useful for low-light)
+        "Increase_contrast": {
+            "filter": "eq=contrast=1.5",  # Higher contrast for better distinction
+        },
+        # Increase both brightness and contrast together
+        "Increase_brightness_and_contrast": {
+            "filter": "eq=brightness=0.1:contrast=1.5",  # Adjust both brightness and contrast at once
+        },
+        # Denoising (useful in low-light noisy environments)
+        "Denoise": {
+            "filter": "hqdn3d=3:3:6:6",  # Reduces noise
+        },
+        # Sharpen (useful when image appears blurry)
+        "Sharpen": {
+            "filter": "unsharp=5:5:1.0:5:5:0.0",  # Enhances image sharpness
+        },
+        # Gamma correction (useful in low-light)
+        "Adjust_gamma": {
+            "filter": "eq=gamma=1.2",  # Adjust gamma to bring out details in darker areas
+        },
+        # Saturation boost (to make colors more vivid in low-light)
+        "Increase_saturation": {
+            "filter": "eq=saturation=1.5",  # Boosts color saturation
+        },
+        # Grayscale (for contrast-focused low-light viewing)
+        "Grayscale": {
+            "filter": "format=gray",  # Converts image to grayscale
         },
     }
 
