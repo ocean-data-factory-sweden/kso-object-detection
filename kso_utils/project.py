@@ -1487,7 +1487,7 @@ class MLProjectProcessor(ProjectProcessor):
                 with main_out:
                     clear_output()
                     try:
-                        for af in model_dict[change["new"].name].versions():
+                        for af in model_dict[change["new"].name]:
                             artifact_dir = af.download(download_path)
                             artifact_file = [
                                 str(i)
