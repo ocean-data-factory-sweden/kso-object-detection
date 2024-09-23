@@ -1331,7 +1331,6 @@ def generate_tracking_report(tracker_dir: str, eval_dir: str):
                     lines = infile.readlines()
                     for line in lines:
                         vals = line.split(" ")
-                        print(vals)
                         class_id, frame_no, tracker_id = (
                             vals[-3],
                             vals[0],
@@ -2207,7 +2206,6 @@ def process_detections(
 
     # Read the annotations.csv file
     df = pd.read_csv(Path(annotations_csv_path, "annotations.csv"))
-    print(df.head())
 
     # Check if the DataFrame is not empty
     if df.empty:
