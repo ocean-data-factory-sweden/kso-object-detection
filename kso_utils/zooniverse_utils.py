@@ -2179,7 +2179,8 @@ def modify_frames(
 
                 # Join filters with commas to form a filter chain
                 if filter_chain:
-                    full_prompt += filter_chain
+                    filter_str = "".join(filter_chain)
+                    full_prompt += filter_str
 
                     # Run the modification
                     try:
