@@ -1860,7 +1860,7 @@ class MLProjectProcessor(ProjectProcessor):
         )
         model_info = {v: {"data": "No model info"} for k, v in model_dict.items()}
         data_info = {v: {"data": "No data info"} for k, v in model_dict.items()}
-        if self.registry == "mlflow":
+        if self.registry == "mlflow" and not publish:
             # Fetch model artifact list
             from mlflow import MlflowClient
 
@@ -1916,7 +1916,7 @@ class MLProjectProcessor(ProjectProcessor):
             display(model_widget)
             return model_widget
 
-        elif self.registry == "wandb":
+        elif self.registry == "wandb" and not publish:
             api = wandb.Api()
 
             # weird error fix (initialize api another time)
