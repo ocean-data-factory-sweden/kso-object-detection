@@ -2184,6 +2184,7 @@ def modify_frames(
 
                     # Run the modification
                     try:
+                        full_prompt += f'.output(row["modif_frame_path"])'
                         logging.info(full_prompt)
                         eval(full_prompt).run(capture_stdout=True, capture_stderr=True)
                         Path(row["modif_frame_path"]).chmod(0o777)
