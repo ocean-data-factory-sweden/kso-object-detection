@@ -2175,12 +2175,11 @@ def modify_frames(
                 for transform in modification_details.values():
                     if "filter" in transform:
                         mod_prompt = transform["filter"]
-                        filter_chain.append(mod_prompt)
+                        filter_chain += mod_prompt
 
                 # Join filters with commas to form a filter chain
                 if filter_chain:
-                    filter_str = ",".join(filter_chain)
-                    full_prompt += f'.filter("{filter_str}")'
+                    full_prompt += filter_chain
 
                     # Run the modification
                     try:
