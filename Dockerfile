@@ -56,26 +56,40 @@ COPY --from=builder /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
 # So that we are not asked for user input during the build
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Create a working directory
-WORKDIR /usr/src/app
-
-COPY . ./kso
-# Install everything that is needed
+# Install dependencies
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         libc6 \
-        # libmagic is needed for panoptes
         libmagic1 \
-        # The libgl1 and libglib2.0-0 are needed for the CV2 python dependency
         libgl1 \
         libglib2.0-0 \
-        # libx264-155 is needed to run ffmpeg with --enable-libx264
         libx264-155 \
         libxau6 \
         libxcb1 \
         libxdmcp6 \
-        openssl && \
-    # Install python and git and upgrade pip
+        openssl \
+        wget && \
+    apt-get clean
+
+# Install Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    bash ~/miniconda.sh -b -p $HOME/miniconda && \
+    rm ~/miniconda.sh && \
+    $HOME/miniconda/bin/conda init && \
+    $HOME/miniconda/bin/conda config --set always_yes yes --set changeps1 no && \
+    $HOME/miniconda/bin/conda update -q conda && \
+    ln -s $HOME/miniconda/bin/conda /usr/local/bin/conda
+
+# Add Conda to PATH
+ENV PATH="/home/${NB_USER}/miniconda/bin:$PATH"
+
+# Create a working directory
+WORKDIR /usr/src/app
+
+COPY . ./kso
+
+# Install python and git
+RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         python3.8 \
         python3-pip \
@@ -90,6 +104,9 @@ RUN apt-get update && \
     python3 -m pip --no-cache-dir install numpy && \
     python3 -m pip --no-cache-dir install \
         -r /usr/src/app/kso/requirements.txt && \
+    # Uninstall OpenCV from pip and install it via conda
+    python3 -m pip uninstall -y opencv-python opencv-contrib-python && \
+    conda install -c conda-forge opencv && \
     # Copy over custom autobackend file to enable use of older YOLO models
     cp \
         /usr/src/app/kso/src/autobackend.py \
@@ -110,12 +127,10 @@ ARG NB_UID=1000
 ENV USER=${NB_USER} \
     NB_UID=${NB_UID} \
     HOME=/home/${NB_USER}
+
 RUN adduser --disabled-password \
     --gecos "Default user" \
     --uid ${NB_UID} \
     ${NB_USER}
-    # Ensure widget extensions are activated
-    # jupyter contrib nbextension install --user && \
-    # jupyter nbextension enable --user --py widgetsnbextension && \
-    # jupyter nbextension enable --user --py jupyter_bbox_widget
+
 USER ${NB_USER}
