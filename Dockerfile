@@ -75,6 +75,8 @@ RUN apt-get update && \
         libxcb1 \
         libxdmcp6 \
         openssl && \
+    # Install wget to download Miniconda
+    apt-get install --no-install-recommends -y wget && \
     # Install python and git and upgrade pip
     apt-get install --no-install-recommends -y \
         python3.8 \
