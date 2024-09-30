@@ -100,6 +100,10 @@ RUN apt-get update && \
     python3 -m pip --no-cache-dir install numpy && \
     python3 -m pip --no-cache-dir install \
         -r /usr/src/app/kso/requirements.txt && \
+    # Uninstall OpenCV pip packages
+    pip uninstall -y opencv-python opencv-contrib-python && \
+    # Install OpenCV using conda
+    conda install -c conda-forge opencv && \
     # Copy over custom autobackend file to enable use of older YOLO models
     cp \
         /usr/src/app/kso/src/autobackend.py \
