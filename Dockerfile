@@ -90,13 +90,13 @@ RUN apt-get update && \
     # Activate the base environment
     /opt/conda/bin/conda init bash && \
     # Activate base environment and install pip
-    /bin/bash -c "source ~/.bashrc && conda activate base && conda install -y pip" && \
+    /bin/bash -c "source ~/.bashrc && /opt/conda/bin/conda activate base && /opt/conda/bin/conda install -y pip" && \
     # Install Python packages using pip inside the Conda base environment
-    /bin/bash -c "source ~/.bashrc && conda activate base && pip install --no-cache-dir -r /usr/src/app/kso/requirements.txt" && \
+    /bin/bash -c "source ~/.bashrc && /opt/conda/bin/conda activate base && pip install --no-cache-dir -r /usr/src/app/kso/requirements.txt" && \
     # Uninstall any conflicting OpenCV versions installed by pip
-    /bin/bash -c "source ~/.bashrc && conda activate base && pip uninstall -y opencv-python opencv-contrib-python" && \
+    /bin/bash -c "source ~/.bashrc && /opt/conda/bin/conda activate base && pip uninstall -y opencv-python opencv-contrib-python" && \
     # Install OpenCV via Conda in the base environment
-    /bin/bash -c "source ~/.bashrc && conda activate base && conda install -y -c conda-forge opencv" && \
+    /bin/bash -c "source ~/.bashrc && /opt/conda/bin/conda activate base && /opt/conda/bin/conda install -y -c conda-forge opencv" && \
     # Copy over custom autobackend file to enable use of older YOLO models
     cp /usr/src/app/kso/src/autobackend.py /opt/conda/lib/python3.8/site-packages/ultralytics/nn/autobackend.py && \
     # Clean up unnecessary packages
