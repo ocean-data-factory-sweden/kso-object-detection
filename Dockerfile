@@ -103,7 +103,8 @@ RUN apt-get update && \
     # Uninstall OpenCV pip packages
     pip uninstall -y opencv-python opencv-contrib-python && \
     # Install OpenCV using conda
-    /opt/conda/bin/conda install -y --verbose --force-reinstall -c conda-forge opencv && \
+    /opt/conda/bin/conda install -y --verbose -c conda-forge opencv && \
+    /opt/conda/bin/conda list \
     # Copy over custom autobackend file to enable use of older YOLO models
     cp \
         /usr/src/app/kso/src/autobackend.py \
@@ -116,7 +117,8 @@ ENV WANDB_DIR=/mimer/NOBACKUP/groups/snic2021-6-9/ \
     WANDB_DATA_DIR=/mimer/NOBACKUP/groups/snic2021-6-9/ \
     DATA_DIR=/tmp \
     ARTIFACT_DIR=/tmp \
-    PYTHONPATH=$PYTHONPATH:/usr/src/app/kso
+    PYTHONPATH=$PYTHONPATH:/usr/src/app/kso \
+    PATH=/opt/conda/bin:$PATH
 
 # Set everything up to work with the jupyter notebooks
 ARG NB_USER=jovyan
