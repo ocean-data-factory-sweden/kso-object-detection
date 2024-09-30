@@ -65,42 +65,35 @@ COPY . ./kso
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         libc6 \
-        # libmagic is needed for panoptes
         libmagic1 \
-        # The libgl1 and libglib2.0-0 are needed for the CV2 python dependency
         libgl1 \
         libglib2.0-0 \
-        # libx264-155 is needed to run ffmpeg with --enable-libx264
         libx264-155 \
         libxau6 \
         libxcb1 \
         libxdmcp6 \
         openssl && \
-    # Install wget to download Miniconda
     apt-get install --no-install-recommends -y wget && \
-    apt-get clean && \
-    # Install Miniconda
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    apt-get clean
+
+# Install Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
     bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda && \
     rm Miniconda3-latest-Linux-x86_64.sh && \
-    /opt/conda/bin/conda clean -afy && \
-    # Add Conda to PATH for all future sessions
-    echo 'export PATH=/opt/conda/bin:$PATH' >> ~/.bashrc && \
-    echo 'export PATH=/opt/conda/bin:$PATH' >> /etc/profile.d/conda.sh && \
-    # Activate the base environment
-    /opt/conda/bin/conda init bash && \
-    # Activate base environment and install pip
-    /bin/bash -c "source ~/.bashrc && /opt/conda/bin/conda activate base && /opt/conda/bin/conda install -y pip" && \
-    # Install Python packages using pip inside the Conda base environment
-    /bin/bash -c "source ~/.bashrc && /opt/conda/bin/conda activate base && pip install --no-cache-dir -r /usr/src/app/kso/requirements.txt" && \
-    # Uninstall any conflicting OpenCV versions installed by pip
-    /bin/bash -c "source ~/.bashrc && /opt/conda/bin/conda activate base && pip uninstall -y opencv-python opencv-contrib-python" && \
-    # Install OpenCV via Conda in the base environment
-    /bin/bash -c "source ~/.bashrc && /opt/conda/bin/conda activate base && /opt/conda/bin/conda install -y -c conda-forge opencv" && \
-    # Copy over custom autobackend file to enable use of older YOLO models
-    cp /usr/src/app/kso/src/autobackend.py /opt/conda/lib/python3.8/site-packages/ultralytics/nn/autobackend.py && \
-    # Clean up unnecessary packages
-    apt-get remove --autoremove -y wget && apt-get clean && rm -rf /var/lib/apt/lists/*
+    /opt/conda/bin/conda clean -afy
+
+# Install Conda packages and pip packages within the base environment
+RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh && \
+    conda install -y pip && \
+    pip install --no-cache-dir -r /usr/src/app/kso/requirements.txt && \
+    pip uninstall -y opencv-python opencv-contrib-python && \
+    conda install -y -c conda-forge opencv"
+
+# Copy over custom autobackend file
+RUN cp /usr/src/app/kso/src/autobackend.py /opt/conda/lib/python3.8/site-packages/ultralytics/nn/autobackend.py
+
+# Clean up unnecessary packages
+RUN apt-get remove --autoremove -y wget && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 
