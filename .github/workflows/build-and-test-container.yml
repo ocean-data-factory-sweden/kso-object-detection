@@ -146,8 +146,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
       - name: Install pytest, pylint and nbqa
         run: pip install pytest pylint nbqa
       - name: Pylint Test kso_utils
