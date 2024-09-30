@@ -61,6 +61,7 @@ WORKDIR /usr/src/app
 
 COPY . ./kso
 # Install everything that is needed
+# Update the package lists and install dependencies for OpenCV and others
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         libc6 \
@@ -88,22 +89,19 @@ RUN apt-get update && \
     echo 'export PATH=/opt/conda/bin:$PATH' >> /etc/profile.d/conda.sh && \
     # Activate the base environment
     /opt/conda/bin/conda init bash && \
-    # Create a Conda environment named 'base' with Python 3.8
-    /opt/conda/bin/conda create --name base python=3.8 -y && \
-    # Activate the base environment
-    echo "conda activate base" >> ~/.bashrc && \
     # Activate base environment and install pip
     /bin/bash -c "source ~/.bashrc && conda activate base && conda install -y pip" && \
-    # Install Python packages using pip inside the Conda environment
+    # Install Python packages using pip inside the Conda base environment
     /bin/bash -c "source ~/.bashrc && conda activate base && pip install --no-cache-dir -r /usr/src/app/kso/requirements.txt" && \
     # Uninstall any conflicting OpenCV versions installed by pip
     /bin/bash -c "source ~/.bashrc && conda activate base && pip uninstall -y opencv-python opencv-contrib-python" && \
     # Install OpenCV via Conda in the base environment
     /bin/bash -c "source ~/.bashrc && conda activate base && conda install -y -c conda-forge opencv" && \
     # Copy over custom autobackend file to enable use of older YOLO models
-    cp /usr/src/app/kso/src/autobackend.py /opt/conda/envs/base/lib/python3.8/site-packages/ultralytics/nn/autobackend.py && \
+    cp /usr/src/app/kso/src/autobackend.py /opt/conda/lib/python3.8/site-packages/ultralytics/nn/autobackend.py && \
     # Clean up unnecessary packages
     apt-get remove --autoremove -y wget && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 
 # Set environment variables
