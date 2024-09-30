@@ -103,7 +103,7 @@ RUN apt-get update && \
     # Uninstall OpenCV pip packages
     pip uninstall -y opencv-python opencv-contrib-python && \
     # Install OpenCV using conda
-    /opt/conda/bin/conda install -y -c conda-forge opencv && \
+    /opt/conda/bin/conda install -y --verbose --no-update-deps -c conda-forge opencv && \
     # Copy over custom autobackend file to enable use of older YOLO models
     cp \
         /usr/src/app/kso/src/autobackend.py \
