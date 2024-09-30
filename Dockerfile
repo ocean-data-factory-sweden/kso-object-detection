@@ -73,10 +73,8 @@ RUN apt-get update && \
         libxcb1 \
         libxdmcp6 \
         openssl && \
-    apt-get install --no-install-recommends -y wget git
-
-# Clean up the apt cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get install --no-install-recommends -y wget git && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
@@ -84,17 +82,21 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh &
     rm Miniconda3-latest-Linux-x86_64.sh && \
     /opt/conda/bin/conda clean -afy
 
-# Ensure that the Conda environment is activated and use the full path for pip
-RUN /opt/conda/bin/conda install -y pip && \
-    /opt/conda/bin/pip install --no-cache-dir -r /usr/src/app/kso/requirements.txt && \
-    /opt/conda/bin/pip uninstall -y opencv-python opencv-contrib-python && \
-    /opt/conda/bin/conda install -y -c conda-forge opencv
+# Create a conda environment with Python 3.8
+RUN /opt/conda/bin/conda create -n myenv python=3.8 -y && \
+    /opt/conda/bin/conda clean -afy
+
+# Copy requirements and install packages
+COPY requirements.txt /usr/src/app/
+RUN /opt/conda/bin/conda run -n myenv pip install --no-cache-dir -r /usr/src/app/requirements.txt && \
+    /opt/conda/bin/conda run -n myenv conda install -y -c conda-forge opencv
 
 # Copy over custom autobackend file
 RUN cp /usr/src/app/kso/src/autobackend.py /opt/conda/lib/python3.8/site-packages/ultralytics/nn/autobackend.py
 
 # Clean up unnecessary packages
 RUN apt-get remove --autoremove -y wget git && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 
 # Set environment variables
