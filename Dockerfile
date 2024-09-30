@@ -92,7 +92,7 @@ RUN /opt/conda/bin/conda run -n myenv pip install --no-cache-dir -r /usr/src/app
     /opt/conda/bin/conda run -n myenv conda install -y -c conda-forge opencv
 
 # Copy over custom autobackend file
-RUN cp /usr/src/app/kso/src/autobackend.py /usr/local/lib/python3.8/dist-packages/ultralytics/nn/autobackend.py
+RUN cp /usr/src/app/kso/src/autobackend.py /opt/conda/envs/myenv/lib/python3.8/site-packages/ultralytics/nn/
 
 # Clean up unnecessary packages
 RUN apt-get remove --autoremove -y wget git && apt-get clean && rm -rf /var/lib/apt/lists/*
