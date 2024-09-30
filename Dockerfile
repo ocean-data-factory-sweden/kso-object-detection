@@ -73,8 +73,10 @@ RUN apt-get update && \
         libxcb1 \
         libxdmcp6 \
         openssl && \
-    apt-get install --no-install-recommends -y wget && \
-    apt-get clean
+    apt-get install --no-install-recommends -y wget git
+
+# Clean up the apt cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
@@ -92,9 +94,7 @@ RUN /opt/conda/bin/conda install -y pip && \
 RUN cp /usr/src/app/kso/src/autobackend.py /opt/conda/lib/python3.8/site-packages/ultralytics/nn/autobackend.py
 
 # Clean up unnecessary packages
-RUN apt-get remove --autoremove -y wget && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-
+RUN apt-get remove --autoremove -y wget git && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 # Set environment variables
