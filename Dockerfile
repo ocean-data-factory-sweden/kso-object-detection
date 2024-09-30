@@ -82,18 +82,18 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh &
     rm Miniconda3-latest-Linux-x86_64.sh && \
     /opt/conda/bin/conda clean -afy
 
-# Install Conda packages and pip packages within the base environment
-RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh && \
-    conda install -y pip && \
-    pip install --no-cache-dir -r /usr/src/app/kso/requirements.txt && \
-    pip uninstall -y opencv-python opencv-contrib-python && \
-    conda install -y -c conda-forge opencv"
+# Ensure that the Conda environment is activated and use the full path for pip
+RUN /opt/conda/bin/conda install -y pip && \
+    /opt/conda/bin/pip install --no-cache-dir -r /usr/src/app/kso/requirements.txt && \
+    /opt/conda/bin/pip uninstall -y opencv-python opencv-contrib-python && \
+    /opt/conda/bin/conda install -y -c conda-forge opencv
 
 # Copy over custom autobackend file
 RUN cp /usr/src/app/kso/src/autobackend.py /opt/conda/lib/python3.8/site-packages/ultralytics/nn/autobackend.py
 
 # Clean up unnecessary packages
 RUN apt-get remove --autoremove -y wget && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 
 
