@@ -121,4 +121,4 @@ RUN adduser --disabled-password \
 USER ${NB_USER}
 
 # Make sure conda is activated in the entry point
-ENTRYPOINT ["/bin/bash", "-c", "source activate myenv && exec \"$@\"", "--"]
+ENTRYPOINT ["/bin/bash", "-c", "source /opt/conda/etc/profile.d/conda.sh && conda activate myenv && exec \"$@\"", "--"]
