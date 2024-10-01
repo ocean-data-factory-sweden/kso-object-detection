@@ -181,7 +181,10 @@ jobs:
         shell: bash
         env:
           WANDB_API: ${{ secrets.WANDB_KEY }}
-        run: wandb login "$WANDB_API"
+        run: |
+          source /opt/conda/etc/profile.d/conda.sh
+          conda activate myenv 
+          wandb login "$WANDB_API"
       - name: Run notebook and widget tests
         id: nb-tests
         run: >-
