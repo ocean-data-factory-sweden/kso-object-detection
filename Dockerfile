@@ -90,7 +90,7 @@ RUN /opt/conda/bin/conda create -n myenv python=3.8 -y && \
 COPY requirements.txt /usr/src/app/
 RUN /opt/conda/bin/conda run -n myenv pip install --no-cache-dir -r /usr/src/app/requirements.txt && \
     /opt/conda/bin/conda run -n myenv pip uninstall -y opencv-python opencv-contrib-python && \  
-    /opt/conda/bin/conda run -n myenv conda install -y -c conda-forge libgcc opencv 
+    /opt/conda/bin/conda run -n myenv conda install -y -c conda-forge libstdcxx-ng opencv 
 
 # Copy over custom autobackend file
 RUN cp /usr/src/app/kso/src/autobackend.py /opt/conda/envs/myenv/lib/python3.8/site-packages/ultralytics/nn/
@@ -107,7 +107,8 @@ ENV WANDB_DIR=/mimer/NOBACKUP/groups/snic2021-6-9/ \
     DATA_DIR=/tmp \
     ARTIFACT_DIR=/tmp \
     PYTHONPATH=$PYTHONPATH:/usr/src/app/kso \
-    PATH=/opt/conda/bin:$PATH
+    PATH=/opt/conda/bin:$PATH \
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/envs/myenv/lib/
 
 # Set everything up to work with the jupyter notebooks
 ARG NB_USER=jovyan
