@@ -146,12 +146,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Activate conda env
-        run: conda activate myenv
-      - name: Add local bin to PATH
-        run: echo "/github/home/.local/bin" >> $GITHUB_PATH
-      - name: Install pytest, pylint and nbqa
-        run: pip install pytest pylint nbqa
+
+      - name: Initialize conda and activate environment
+        id: activate-conda
+        run: |
+          source /opt/conda/etc/profile.d/conda.sh
+          conda activate myenv
+          echo "PATH=$(conda env list | grep 'myenv' | awk '{print $NF}')/bin:$PATH" >> $GITHUB_ENV
+          echo "PYTHONPATH=$(conda env list | grep 'myenv' | awk '{print $NF}')/lib/python3.8/site-packages:$PYTHONPATH" >> $GITHUB_ENV
+
+      - name: Install pylint, pytest, and nbqa
+        run: |
+          pip install pylint pytest nbqa
+          echo "/github/home/.local/bin" >> $GITHUB_PATH  # Add the local bin path to the GitHub path
+
       - name: Pylint Test kso_utils
         run: |
           pylint --disable=possibly-used-before-assignment,used-before-assignment,no-member,assignment-from-no-return kso_utils
