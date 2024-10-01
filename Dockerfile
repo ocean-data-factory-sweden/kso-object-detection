@@ -89,6 +89,7 @@ RUN /opt/conda/bin/conda create -n myenv python=3.8 -y && \
 # Copy requirements and install packages
 COPY requirements.txt /usr/src/app/
 RUN /opt/conda/bin/conda run -n myenv pip install --no-cache-dir -r /usr/src/app/requirements.txt && \
+    /opt/conda/bin/conda run -n myenv pip uninstall -y opencv-python opencv-contrib-python && \  
     /opt/conda/bin/conda run -n myenv conda install -y -c conda-forge opencv
 
 # Copy over custom autobackend file
