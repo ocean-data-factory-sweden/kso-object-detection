@@ -150,15 +150,15 @@ jobs:
         run: pip install pytest pylint nbqa
       - name: Pylint Test kso_utils
         run: |
-          pylint --init-hook="import sys; sys.path.append('/opt/conda/envs/myenv/lib/python3.8/site-packages/')" --disable=possibly-used-before-assignment,used-before-assignment,no-member,assignment-from-no-return kso_utils
+          /github/home/.local/bin/pylint --init-hook="import sys; sys.path.append('/opt/conda/envs/myenv/lib/python3.8/site-packages/')" --disable=possibly-used-before-assignment,used-before-assignment,no-member,assignment-from-no-return kso_utils
       - name: Pylint Test tests
         if: success() || failure()
         run: |
-          pylint --init-hook="import sys; sys.path.append('/opt/conda/envs/myenv/lib/python3.8/site-packages/')" --disable=no-member,assignment-from-no-return test/*
+          /github/home/.local/bin/pylint --init-hook="import sys; sys.path.append('/opt/conda/envs/myenv/lib/python3.8/site-packages/')" --disable=no-member,assignment-from-no-return test/*
       - name: Pylint Test NB notebooks
         if: success() || failure()
         run: |
-          nbqa pylint --init-hook="import sys; sys.path.append('/opt/conda/envs/myenv/lib/python3.8/site-packages/')" --disable=unexpected-keyword-arg,no-member,assignment-from-no-return,no-value-for-parameter notebooks
+          /github/home/.local/bin/nbqa pylint --init-hook="import sys; sys.path.append('/opt/conda/envs/myenv/lib/python3.8/site-packages/')" --disable=unexpected-keyword-arg,no-member,assignment-from-no-return,no-value-for-parameter notebooks
         # If one of the pylint steps fails, there are errors and we do not need to run the test below.
       - name: Login W&B
         shell: bash
