@@ -158,7 +158,7 @@ jobs:
       - name: Pylint Test NB notebooks
         if: success() || failure()
         run: |
-          /github/home/.local/bin/nbqa pylint --init-hook="import sys; sys.path.append('/opt/conda/envs/myenv/lib/python3.8/site-packages/')" --disable=unexpected-keyword-arg,no-member,assignment-from-no-return,no-value-for-parameter notebooks
+          PYTHONPATH=/opt/conda/envs/myenv/lib/python3.8/site-packages/ /github/home/.local/bin/nbqa pylint --disable=unexpected-keyword-arg,no-member,assignment-from-no-return,no-value-for-parameter notebooks
         # If one of the pylint steps fails, there are errors and we do not need to run the test below.
       - name: Login W&B
         shell: bash
