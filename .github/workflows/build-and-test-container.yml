@@ -147,7 +147,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Install pytest, pylint and nbqa
-        run: conda install -y pytest pylint nbqa
+        run: conda install -y -c conda-forge pytest pylint nbqa
       - name: Pylint Test kso_utils
         run: |
           pylint --disable=possibly-used-before-assignment,used-before-assignment,no-member,assignment-from-no-return kso_utils
