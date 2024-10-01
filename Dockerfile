@@ -90,7 +90,7 @@ RUN /opt/conda/bin/conda create -n myenv python=3.8 -y && \
 COPY requirements.txt /usr/src/app/
 RUN /opt/conda/bin/conda run -n myenv pip install --no-cache-dir -r /usr/src/app/requirements.txt && \
     /opt/conda/bin/conda run -n myenv pip uninstall -y opencv-python opencv-contrib-python && \  
-    /opt/conda/bin/conda run -n myenv conda install -y -c conda-forge opencv
+    /opt/conda/bin/conda run -n myenv conda install -y -c conda-forge libgcc opencv 
 
 # Copy over custom autobackend file
 RUN cp /usr/src/app/kso/src/autobackend.py /opt/conda/envs/myenv/lib/python3.8/site-packages/ultralytics/nn/
