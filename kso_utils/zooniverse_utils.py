@@ -505,14 +505,18 @@ def process_zoo_classifications(
                                     int(i["x"])
                                     if "x" in i
                                     else (
-                                        int(i["x_center"]) if "x_center" in i else None
+                                        int(i["x_center"] - 0.5 * i["width"])
+                                        if "x_center" in i
+                                        else None
                                     )
                                 ),
                                 "y": (
                                     int(i["y"])
                                     if "y" in i
                                     else (
-                                        int(i["y_center"]) if "y_center" in i else None
+                                        int(i["y_center"] + 0.5 * i["height"])
+                                        if "y_center" in i
+                                        else None
                                     )
                                 ),
                                 "w": int(i["width"]) if "width" in i else None,
