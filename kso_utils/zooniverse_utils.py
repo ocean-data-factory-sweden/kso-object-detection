@@ -514,7 +514,7 @@ def process_zoo_classifications(
                                     int(i["y"])
                                     if "y" in i
                                     else (
-                                        int(i["y_center"] + 0.5 * i["height"])
+                                        int(i["y_center"] - 0.5 * i["height"])
                                         if "y_center" in i
                                         else None
                                     )
