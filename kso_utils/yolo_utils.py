@@ -991,10 +991,10 @@ def frame_aggregation(
             else:
                 if link_bool:
                     image_output = PIL.Image.open(
-                        requests.get(name[0], stream=True).raw
+                        requests.get(name, stream=True).raw
                     )
                 else:
-                    image_output = np.asarray(PIL.Image.open(name[0]))
+                    image_output = np.asarray(PIL.Image.open(name))
                 img_array = np.asarray(image_output)
                 PIL.Image.fromarray(img_array).save(img_out)
 
