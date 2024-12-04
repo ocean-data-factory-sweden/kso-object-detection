@@ -1644,7 +1644,10 @@ class MLProjectProcessor(ProjectProcessor):
         img_size: int = 128,
     ):
         # Disable wandb (not necessary yet)
-        self.modules["ultralytics"].settings.update({"wandb": True})
+        if self.registry == "wandb":
+            self.modules["ultralytics"].settings.update({"wandb": True})
+        elif self.registry == "mlflow":
+            self.modules["ultralytics"].settings.update({"mlflow": True})
 
         if self.registry == "mlflow":
             active_run = mlflow.active_run()
@@ -1662,8 +1665,6 @@ class MLProjectProcessor(ProjectProcessor):
             val_dataset: PandasDataset = mlflow.data.from_pandas(
                 val_df, source=valid_path
             )
-            # if active_run:
-            #    mlflow.end_run()
 
             from mlflow.exceptions import MlflowException
 
@@ -1745,6 +1746,8 @@ class MLProjectProcessor(ProjectProcessor):
         # Close down run
         if self.registry == "wandb":
             self.modules["wandb"].finish()
+        elif self.registry == "mlflow":
+            mlflow.end_run()
 
     def train_yolov5(
         self, exp_name, weights, project, epochs=50, batch_size=16, img_size=[640, 640]
